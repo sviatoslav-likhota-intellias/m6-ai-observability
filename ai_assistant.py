@@ -20,12 +20,14 @@ langfuse = Langfuse()
 
 LANGFUSE_BASE_URL = os.getenv("LANGFUSE_BASE_URL", "https://cloud.langfuse.com")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-MODEL = "gpt-5-mini"
+# Model comes from .env (e.g. a Groq model); the OpenAI client also reads OPENAI_BASE_URL from env.
+MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")
 
 print("Setup complete — Langfuse client initialised")
 print(f"Traces will appear at: {LANGFUSE_BASE_URL}")
 
-@observe(name="chatbot", tags=["shopbot", "support"], type="function")
+# Tags are applied via propagate_attributes below (newer SDKs don't accept tags/type on @observe).
+@observe(name="chatbot")
 def ask_bot(user_message: str) -> str:
     properties = {"feature": "bot", "channel": "cli"}
 
@@ -52,3 +54,6 @@ ask_bot("What is your return policy?")
 ask_bot("What is your refund method?")
 ask_bot("What are your customer support hours?")
 ask_bot("Do you offer free shipping?")
+
+# Make sure all buffered traces are sent before the script exits.
+langfuse.flush()

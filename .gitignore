@@ -1,0 +1,9 @@
+.venv/
+.env
+__pycache__/
+.idea/
+
+# Un-ignore repo deliverables excluded by ~/.gitignore_global
+!Makefile
+!scripts/
+/venv/
